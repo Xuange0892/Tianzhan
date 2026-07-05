@@ -1,0 +1,8 @@
+<!-- Debug 构建类型的清单文件 -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Debug 模式下允许应用调试 -->
+    <application
+        android:debuggable="true" />
+
+</manifest>

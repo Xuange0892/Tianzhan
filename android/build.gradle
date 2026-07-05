@@ -1,0 +1,26 @@
+// 项目级构建配置文件
+// 配置整个 Android 项目的全局设置
+
+// 引入 Android 构建工具和 Kotlin 插件的仓库配置
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// 根项目的构建配置
+rootProject.buildDir = "../build"
+
+// 统一设置子项目的构建输出目录
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+
+    // 强制所有子项目使用相同的 Kotlin 版本
+    project.evaluationDependsOn(":app")
+}
+
+// 清理任务：删除构建输出目录
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
