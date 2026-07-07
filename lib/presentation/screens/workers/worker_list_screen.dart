@@ -398,8 +398,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
             ),
             const Icon(Icons.chevron_right, color: AppColors.inactive),
           ],
-          ),
-        ],
+        ),
       ),
     );
   }
