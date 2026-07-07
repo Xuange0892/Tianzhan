@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 启动页背景 drawable 资源 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- 应用启动时的默认背景颜色 -->
-    <item android:drawable="@android:color/white" />
+    <!-- 应用启动时的默认背景颜色，与 Flutter 深色主题一致 -->
+    <item android:drawable="@android:color/black" />
 </layer-list>

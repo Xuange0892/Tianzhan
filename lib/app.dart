@@ -8,7 +8,7 @@ class TunnelMateApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '掘进助手',
+      title: 'Tianzhan',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       home: const HomeScreen(),

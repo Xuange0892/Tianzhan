@@ -3,14 +3,14 @@
 <resources>
 
     <!-- 启动页主题：应用启动时显示，直到 Flutter 引擎完成初始化 -->
-    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
-        <!-- 设置启动页背景 -->
-        <item name="android:background">@drawable/launch_background</item>
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <!-- 设置启动页背景为深色，适配应用深色主题 -->
+        <item name="android:windowBackground">@drawable/launch_background</item>
     </style>
 
     <!-- 应用正常运行时的主题 -->
-    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
-        <item name="android:windowBackground">@android:color/white</item>
+    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@android:color/black</item>
     </style>
 
 </resources>

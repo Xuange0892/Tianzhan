@@ -37,28 +37,38 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadData() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
-    final today = AppDateUtils.formatDate(DateTime.now());
-    final workers = await _workerRepo.getAll(status: 'active');
-    final todayAttendance = await _attendanceRepo.getByDate(today);
-    final todaySchedules = await _scheduleRepo.getByDate(today);
-    final expiring = await _workerRepo.getExpiringCertificates(30);
+    try {
+      final today = AppDateUtils.formatDate(DateTime.now());
+      final workers = await _workerRepo.getAll(status: 'active');
+      final todayAttendance = await _attendanceRepo.getByDate(today);
+      final todaySchedules = await _scheduleRepo.getByDate(today);
+      final expiring = await _workerRepo.getExpiringCertificates(30);
 
-    final normalCount =
-        todayAttendance.where((a) => a.status == 'normal').length;
-    final absentCount =
-        todayAttendance.where((a) => a.status == 'absent').length +
-            todayAttendance.where((a) => a.status == 'late').length;
+      final normalCount =
+          todayAttendance.where((a) => a.status == 'normal').length;
+      final absentCount =
+          todayAttendance.where((a) => a.status == 'absent').length +
+              todayAttendance.where((a) => a.status == 'late').length;
 
-    setState(() {
-      _totalWorkers = workers.length;
-      _todayAttendance = normalCount;
-      _todayAbsent = absentCount;
-      _todaySchedule = todaySchedules.length;
-      _expiringWorkers = expiring;
-      _isLoading = false;
-    });
+      if (!mounted) return;
+      setState(() {
+        _totalWorkers = workers.length;
+        _todayAttendance = normalCount;
+        _todayAbsent = absentCount;
+        _todaySchedule = todaySchedules.length;
+        _expiringWorkers = expiring;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('数据加载失败: $e')),
+      );
+    }
   }
 
   @override
