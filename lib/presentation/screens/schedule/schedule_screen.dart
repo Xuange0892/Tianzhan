@@ -41,7 +41,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
     if (mounted) setState(() {
       _shiftStats = stats;
-      _schedules = daySchedules.map((s) => {
+      _schedules = daySchedules.map((s) {
         final w = workerMap[s.workerId];
         return {'id': s.id, 'workerName': w?.name ?? '未知', 'employeeNo': w?.employeeNo ?? '', 'shift': s.shiftType, 'position': s.position};
       }).toList();

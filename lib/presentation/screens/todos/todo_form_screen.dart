@@ -81,7 +81,7 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
                 child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   Text(_dueDate != null ? AppDateUtils.formatDate(_dueDate!) : '请选择', style: TextStyle(color: _dueDate != null ? AppColors.primaryText(isDark) : AppColors.inactiveColor(isDark))),
                   const Icon(Icons.calendar_today_outlined, size: 20),
-                ])),
+                ]))),
             const SizedBox(height: 16),
             // 优先级
             Text('优先级', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.primaryText(isDark))),

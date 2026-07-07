@@ -258,7 +258,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
   }
 
   Future<void> _downloadTemplate() async {
-    final csv = await WorkerImportService.generateTemplate();
+    final csv = await WorkerImportService().generateTemplate();
     try {
       final dir = await getApplicationDocumentsDirectory();
       final file = File('${dir.path}/人员导入模板.csv');

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/date_utils.dart';
@@ -6,6 +7,7 @@ import '../../../data/models/attendance.dart';
 import '../../../data/models/worker.dart';
 import '../../../data/repositories/attendance_repository.dart';
 import '../../../data/repositories/worker_repository.dart';
+import '../../../core/theme/theme_provider.dart';
 import '../../widgets/empty_state.dart';
 
 class AttendanceScreen extends StatefulWidget {
@@ -121,6 +123,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.watch<ThemeProvider>().isDark;
     final dateStr = AppDateUtils.formatDate(_selectedDate);
     final isToday = AppDateUtils.isSameDay(_selectedDate, DateTime.now());
 
@@ -147,7 +150,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(16),
-            color: AppColors.surface,
+            color: AppColors.cardColor(isDark),
             child: Column(
               children: [
                 InkWell(
@@ -160,10 +163,10 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       const SizedBox(width: 8),
                       Text(
                         '${AppDateUtils.formatMonth(_selectedDate)} ${AppDateUtils.weekdayName(_selectedDate.weekday)}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.primaryText,
+                          color: AppColors.primary,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -187,7 +190,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                _buildDailyStats(),
+                _buildDailyStats(isDark),
               ],
             ),
           ),
@@ -206,7 +209,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                         itemBuilder: (context, index) {
                           final worker = _workers[index];
                           final attendance = _attendanceMap[worker.id];
-                          return _buildAttendanceItem(worker, attendance);
+                          return _buildAttendanceItem(worker, attendance, isDark);
                         },
                       ),
           ),
@@ -217,9 +220,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: AppColors.cardColor(isDark),
                   border: Border(
-                    top: BorderSide(color: AppColors.divider),
+                    top: BorderSide(color: AppColors.dividerColor(isDark)),
                   ),
                 ),
                 child: Row(
@@ -261,7 +264,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     );
   }
 
-  Widget _buildDailyStats() {
+  Widget _buildDailyStats(bool isDark) {
     final stats = <String, int>{};
     for (final a in _attendanceMap.values) {
       if (a != null) {
@@ -279,7 +282,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        _buildStatItem('应到', total.toString(), AppColors.primaryText),
+        _buildStatItem('应到', total.toString(), AppColors.primaryText(isDark)),
         _buildStatItem('出勤', '$normal', AppColors.secondary),
         _buildStatItem('迟到', '$late', AppColors.warning),
         _buildStatItem('缺勤', '$absent', AppColors.danger),
@@ -302,21 +305,21 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
-            color: AppColors.secondaryText,
+            color: color,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildAttendanceItem(Worker worker, Attendance? attendance) {
+  Widget _buildAttendanceItem(Worker worker, Attendance? attendance, bool isDark) {
     final status = attendance?.status ?? 'unchecked';
     final statusLabel =
         AppConstants.attendanceStatusLabels[status] ?? '未打卡';
     final statusColor =
-        AppConstants.attendanceStatusColors[status] ?? AppColors.inactive;
+        AppConstants.attendanceStatusColors[status] ?? AppColors.inactiveColor(isDark);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
@@ -346,7 +349,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                         : Icons.radio_button_unchecked,
                     color: _selectedWorkerIds.contains(worker.id)
                         ? AppColors.primary
-                        : AppColors.inactive,
+                        : AppColors.inactiveColor(isDark),
                   ),
                 ),
               CircleAvatar(
@@ -368,18 +371,18 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   children: [
                     Text(
                       worker.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.primaryText,
+                        color: AppColors.primaryText(isDark),
                       ),
                     ),
                     if (attendance?.checkInTime != null)
                       Text(
                         '打卡时间: ${attendance!.checkInTime}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.secondaryText,
+                          color: AppColors.secondaryText(isDark),
                         ),
                       ),
                   ],
@@ -409,9 +412,10 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   }
 
   void _showStatusPicker(Worker worker) {
+    final isDark = context.watch<ThemeProvider>().isDark;
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.cardColor(isDark),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -424,10 +428,10 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             children: [
               Text(
                 '${worker.name} - 考勤状态',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primaryText,
+                  color: AppColors.primaryText(isDark),
                 ),
               ),
               const SizedBox(height: 16),
