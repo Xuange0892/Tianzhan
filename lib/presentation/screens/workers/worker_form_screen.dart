@@ -49,8 +49,8 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
     _remarkCtrl = TextEditingController(text: w?.remark);
     _department = w?.department;
     _jobType = w?.jobType;
-    _certificateExpiry = DateUtils.parseDate(w?.certificateExpireDate);
-    _entryDate = DateUtils.parseDate(w?.entryDate);
+    _certificateExpiry = AppDateUtils.parseDate(w?.certificateExpireDate);
+    _entryDate = AppDateUtils.parseDate(w?.entryDate);
   }
 
   @override
@@ -97,9 +97,9 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
           ? null
           : _certificateNoCtrl.text.trim(),
       certificateExpireDate: _certificateExpiry != null
-          ? DateUtils.formatDate(_certificateExpiry!)
+          ? AppDateUtils.formatDate(_certificateExpiry!)
           : null,
-      entryDate: _entryDate != null ? DateUtils.formatDate(_entryDate!) : null,
+      entryDate: _entryDate != null ? AppDateUtils.formatDate(_entryDate!) : null,
       status: widget.worker?.status ?? 'active',
       emergencyContact: _emergencyContactCtrl.text.trim().isEmpty
           ? null
@@ -218,7 +218,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
                 ),
                 child: Text(
                   _certificateExpiry != null
-                      ? DateUtils.formatDate(_certificateExpiry!)
+                      ? AppDateUtils.formatDate(_certificateExpiry!)
                       : '请选择日期',
                   style: TextStyle(
                     color: _certificateExpiry != null
@@ -267,7 +267,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
                 ),
                 child: Text(
                   _entryDate != null
-                      ? DateUtils.formatDate(_entryDate!)
+                      ? AppDateUtils.formatDate(_entryDate!)
                       : '请选择日期',
                   style: TextStyle(
                     color: _entryDate != null
