@@ -180,9 +180,9 @@ class _WorkerDetailScreenState extends State<WorkerDetailScreen> {
             _buildInfoRow(
               '证件到期日',
               _worker.certificateExpireDate ?? '未设置',
-              valueColor: DateUtils.daysUntilExpiry(
+              valueColor: AppDateUtils.daysUntilExpiry(
                           _worker.certificateExpireDate) >= 0 &&
-                      DateUtils.daysUntilExpiry(
+                      AppDateUtils.daysUntilExpiry(
                               _worker.certificateExpireDate) <=
                           30
                   ? AppColors.warning
