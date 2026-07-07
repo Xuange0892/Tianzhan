@@ -23,6 +23,7 @@ class _ManagerScheduleScreenState extends State<ManagerScheduleScreen> {
 
   List<Worker> _activeWorkers = [];
   List<ManagerSchedule> _schedules = [];
+  Map<int, Worker> _workerMap = {};
   bool _loading = true;
 
   @override
@@ -33,7 +34,8 @@ class _ManagerScheduleScreenState extends State<ManagerScheduleScreen> {
     final now = DateTime.now();
     final monthStr = '${now.year}-${now.month.toString().padLeft(2, '0')}';
     final schedules = await _repo.getByMonth(monthStr);
-    if (mounted) setState(() { _activeWorkers = workers; _schedules = schedules; _loading = false; });
+    final workerMap = {for (var w in workers) w.id!: w};
+    if (mounted) setState(() { _activeWorkers = workers; _schedules = schedules; _workerMap = workerMap; _loading = false; });
   }
 
   Future<void> _addSchedule() async {
@@ -105,7 +107,7 @@ class _ManagerScheduleScreenState extends State<ManagerScheduleScreen> {
                           onDismissed: (_) async { await _repo.delete(s.id!); _load(); },
                           child: ListTile(
                             leading: const Icon(Icons.person_outline, color: AppColors.primary),
-                            title: Text(s.workerName ?? '未知', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.primaryText(isDark))),
+                            title: Text(_workerMap[s.workerId]?.name ?? '未知', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.primaryText(isDark))),
                             subtitle: Text('${s.date}  ${s.position ?? ''}', style: TextStyle(fontSize: 13, color: AppColors.secondaryText(isDark))),
                           ),
                         ),

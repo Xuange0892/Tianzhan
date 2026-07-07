@@ -64,7 +64,7 @@ class _SignInDetailScreenState extends State<SignInDetailScreen> {
     unsigned.forEach((n) => report.writeln('  - $n'));
 
     try {
-      final dir = await Directory('/data/user/work').create(temp: true);
+      final dir = Directory.systemTemp.createTempSync('signin_');
       final file = File('${dir.path}/签到报告_${widget.event.title}.txt');
       await file.writeAsString(report.toString());
       if (mounted) await Share.shareXFiles([XFile(file.path)], subject: '签到报告：${widget.event.title}');

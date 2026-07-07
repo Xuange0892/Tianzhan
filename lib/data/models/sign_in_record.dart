@@ -16,12 +16,24 @@ class SignInRecord {
   /// 签到时间
   final String? signedAt;
 
+  /// 人员姓名（通过 JOIN 查询时填充）
+  final String? workerName;
+
+  /// 人员工号（通过 JOIN 查询时填充）
+  final String? workerEmployeeNo;
+
+  /// 创建时间（通过 JOIN 查询时填充）
+  final String? createdAt;
+
   SignInRecord({
     this.id,
     required this.eventId,
     required this.workerId,
     this.signed = false,
     this.signedAt,
+    this.workerName,
+    this.workerEmployeeNo,
+    this.createdAt,
   });
 
   /// 转换为数据库 Map
@@ -53,6 +65,9 @@ class SignInRecord {
     int? workerId,
     bool? signed,
     String? signedAt,
+    String? workerName,
+    String? workerEmployeeNo,
+    String? createdAt,
   }) {
     return SignInRecord(
       id: id ?? this.id,
@@ -60,6 +75,12 @@ class SignInRecord {
       workerId: workerId ?? this.workerId,
       signed: signed ?? this.signed,
       signedAt: signedAt ?? this.signedAt,
+      workerName: workerName ?? this.workerName,
+      workerEmployeeNo: workerEmployeeNo ?? this.workerEmployeeNo,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
+
+  /// signedIn 别名，兼容屏幕代码中的 r.signedIn 调用
+  bool get signedIn => signed;
 }

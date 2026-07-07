@@ -158,7 +158,7 @@ class WorkerExportService {
 
       // 追加自定义字段值
       if (includeCustomFields) {
-        final values = w.id != null ? workerCustomValues[w.id!] : {};
+        final values = w.id != null ? (workerCustomValues[w.id!] ?? {}) : <int, String>{};
         for (final cf in customFields) {
           row.add(values[cf.id] ?? w.customFieldValues[cf.id] ?? '');
         }

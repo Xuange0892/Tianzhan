@@ -1,49 +1,5 @@
 import '../database/database_helper.dart';
-
-/// 管理人员排班模型
-class ManagerSchedule {
-  final int? id;
-  final String date;
-  final String managerName;
-  final String? position;
-  final String? shiftType;
-  final String? remark;
-  final String? createdAt;
-
-  ManagerSchedule({
-    this.id,
-    required this.date,
-    required this.managerName,
-    this.position,
-    this.shiftType,
-    this.remark,
-    this.createdAt,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'date': date,
-      'manager_name': managerName,
-      'position': position,
-      'shift_type': shiftType,
-      'remark': remark,
-      'created_at': createdAt,
-    };
-  }
-
-  factory ManagerSchedule.fromMap(Map<String, dynamic> map) {
-    return ManagerSchedule(
-      id: map['id'] as int?,
-      date: map['date'] as String,
-      managerName: map['manager_name'] as String,
-      position: map['position'] as String?,
-      shiftType: map['shift_type'] as String?,
-      remark: map['remark'] as String?,
-      createdAt: map['created_at'] as String?,
-    );
-  }
-}
+import '../models/manager_schedule.dart';
 
 /// 管理人员排班 Repository
 class ManagerScheduleRepository {
@@ -68,6 +24,18 @@ class ManagerScheduleRepository {
       'manager_schedules',
       where: 'date >= ? AND date <= ?',
       whereArgs: [start, end],
+      orderBy: 'date ASC, manager_name ASC',
+    );
+    return maps.map((m) => ManagerSchedule.fromMap(m)).toList();
+  }
+
+  /// 按月份获取排班记录
+  Future<List<ManagerSchedule>> getByMonth(String yearMonth) async {
+    final db = await _dbHelper.database;
+    final maps = await db.query(
+      'manager_schedules',
+      where: 'date LIKE ?',
+      whereArgs: ['$yearMonth%'],
       orderBy: 'date ASC, manager_name ASC',
     );
     return maps.map((m) => ManagerSchedule.fromMap(m)).toList();

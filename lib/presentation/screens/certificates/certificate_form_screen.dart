@@ -68,9 +68,9 @@ class _CertificateFormScreenState extends State<CertificateFormScreen> {
     final cert = Certificate(
       id: widget.cert?.id,
       workerId: _selectedWorkerId!,
-      name: _nameCtrl.text.trim(),
-      number: _numberCtrl.text.trim().isEmpty ? null : _numberCtrl.text.trim(),
-      imagePath: _imagePath,
+      certName: _nameCtrl.text.trim(),
+      certNo: _numberCtrl.text.trim().isEmpty ? null : _numberCtrl.text.trim(),
+      certPhotoPath: _imagePath,
       issueDate: _issueDate != null ? AppDateUtils.formatDate(_issueDate!) : null,
       expireDate: _expireDate != null ? AppDateUtils.formatDate(_expireDate!) : null,
       remark: _remarkCtrl.text.trim().isEmpty ? null : _remarkCtrl.text.trim(),

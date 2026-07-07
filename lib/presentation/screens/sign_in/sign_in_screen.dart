@@ -43,7 +43,7 @@ class _SignInScreenState extends State<SignInScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _events.isEmpty
-              ? EmptyState(icon: Icons.fact_check_outline, title: '暂无签到事项', subtitle: '点击右下角 + 创建新的签到事项')
+              ? EmptyState(icon: Icons.task_outlined, title: '暂无签到事项', subtitle: '点击右下角 + 创建新的签到事项')
               : RefreshIndicator(
                   onRefresh: _load,
                   child: ListView.builder(

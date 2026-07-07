@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import '../database/database_helper.dart';
 import '../models/sign_in_event.dart';
+import '../models/sign_in_record.dart';
 import '../models/worker.dart';
 import 'worker_repository.dart';
 
@@ -94,7 +95,7 @@ class SignInRepository {
       id: m['id'] as int?,
       eventId: m['event_id'] as int,
       workerId: m['worker_id'] as int,
-      signedIn: (m['signed_in'] as int?) == 1,
+      signed: (m['signed_in'] as int?) == 1,
       signedAt: m['signed_at'] as String?,
       createdAt: m['created_at'] as String?,
       workerName: m['worker_name'] as String?,

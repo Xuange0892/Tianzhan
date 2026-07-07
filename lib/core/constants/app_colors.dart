@@ -103,6 +103,19 @@ class AppColors {
   static Color inactiveColor(bool isDark) =>
       isDark ? darkInactive : lightInactive;
 
+  // ==================== 亮色主题额外颜色 ====================
+
+  /// 亮色次级表面变体
+  static const Color lightSurfaceVariant = Color(0xFFE8E8E8);
+
+  /// 亮色占位/提示文字
+  static const Color lightHintText = Color(0xFF999999);
+
+  // ==================== 深色主题额外颜色 ====================
+
+  /// 深色次级表面变体
+  static const Color darkSurfaceVariant = Color(0xFF2C2C2C);
+
   // ==================== 向后兼容属性 ====================
   // 保持与旧版 UI 代码的兼容性
   // 旧代码中直接使用 AppColors.primaryText 等无参属性
@@ -118,6 +131,7 @@ class AppColors {
   static const Color surfaceLight = darkSurfaceLight;
 
   /// 主文字（旧版兼容，返回深色主文字）
+  /// 同时支持方法调用 AppColors.primaryText(isDark)
   static const Color primaryText = darkPrimaryText;
 
   /// 次文字（旧版兼容，返回深色次文字）
@@ -128,4 +142,19 @@ class AppColors {
 
   /// 禁用色（旧版兼容，返回深色禁用色）
   static const Color inactive = darkInactive;
+
+  // ==================== 与旧版属性同名的方法（支持 isDark 参数） ====================
+  // 屏幕文件中大量使用 AppColors.primaryText(isDark) 调用形式
+
+  /// 根据主题获取主文字色
+  static Color primaryText(bool isDark) =>
+      isDark ? const Color(0xFFFFFFFF) : const Color(0xFF333333);
+
+  /// 根据主题获取次文字色
+  static Color secondaryText(bool isDark) =>
+      isDark ? const Color(0xFFB0B0B0) : const Color(0xFF666666);
+
+  /// 根据主题获取禁用/占位色
+  static Color inactiveColor(bool isDark) =>
+      isDark ? const Color(0xFF616161) : const Color(0xFF999999);
 }

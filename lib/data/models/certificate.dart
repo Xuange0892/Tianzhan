@@ -88,13 +88,17 @@ class Certificate {
     String? remark,
     String? createdAt,
     String? updatedAt,
+    // 别名参数，方便旧代码调用
+    String? name,
+    String? number,
+    String? imagePath,
   }) {
     return Certificate(
       id: id ?? this.id,
       workerId: workerId ?? this.workerId,
-      certName: certName ?? this.certName,
-      certNo: certNo ?? this.certNo,
-      certPhotoPath: certPhotoPath ?? this.certPhotoPath,
+      certName: certName ?? name ?? this.certName,
+      certNo: certNo ?? number ?? this.certNo,
+      certPhotoPath: certPhotoPath ?? imagePath ?? this.certPhotoPath,
       issueDate: issueDate ?? this.issueDate,
       expireDate: expireDate ?? this.expireDate,
       remark: remark ?? this.remark,
@@ -102,4 +106,15 @@ class Certificate {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+
+  // ==================== 别名 getter（兼容屏幕文件引用） ====================
+
+  /// 证件名称别名
+  String get name => certName;
+
+  /// 证件编号别名
+  String? get number => certNo;
+
+  /// 证件照片路径别名
+  String? get imagePath => certPhotoPath;
 }
