@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'app.dart';
+import 'core/theme/theme_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,5 +40,13 @@ void main() {
     );
   };
 
-  runApp(const TunnelMateApp());
+  runApp(
+    // 包裹 MultiProvider，注册 ThemeProvider
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: const TunnelMateApp(),
+    ),
+  );
 }

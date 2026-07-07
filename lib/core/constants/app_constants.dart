@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
 
+/// 应用全局常量
+/// 包含基础枚举类型、签到相关常量等
 class AppConstants {
   AppConstants._();
 
-  static const String appName = 'Tianzhan';
-  static const String appVersion = '1.0.0';
+  // ==================== 应用信息 ====================
+
+  static const String appName = 'TunnelMate';
+  static const String appVersion = '2.0.0';
+
+  // ==================== 部门列表 ====================
+
+  /// 部门列表（空列表，由用户自行管理）
+  static const List<String> departments = [];
+
+  // ==================== 岗位类型 ====================
 
   static const List<String> jobTypes = [
     '掘进工',
@@ -18,13 +29,7 @@ class AppConstants {
     '技术员',
   ];
 
-  static const List<String> departments = [
-    '掘进一队',
-    '掘进二队',
-    '支护班',
-    '机电班',
-    '运输班',
-  ];
+  // ==================== 班次类型 ====================
 
   static const List<String> shiftTypes = [
     '白班',
@@ -32,11 +37,14 @@ class AppConstants {
     '中班',
   ];
 
+  /// 班次对应时间段
   static const Map<String, String> shiftTimeMap = {
     '白班': '08:00 - 16:00',
     '夜班': '16:00 - 00:00',
     '中班': '00:00 - 08:00',
   };
+
+  // ==================== 考勤状态 ====================
 
   static const List<String> attendanceStatuses = [
     'normal',
@@ -55,16 +63,61 @@ class AppConstants {
   };
 
   static const Map<String, Color> attendanceStatusColors = {
-    'normal': Color(0xFF388E3C),
-    'late': Color(0xFFF57C00),
-    'early': Color(0xFFF57C00),
-    'absent': Color(0xFFD32F2F),
-    'leave': Color(0xFF1976D2),
+    'normal': Color(0xFF66BB6A),
+    'late': Color(0xFFFFA726),
+    'early': Color(0xFFFFA726),
+    'absent': Color(0xFFEF5350),
+    'leave': Color(0xFF26A69A),
   };
+
+  // ==================== 人员状态 ====================
 
   static const Map<String, String> workerStatusLabels = {
     'active': '在职',
     'leave': '离职',
     'transfer': '调岗',
   };
+
+  // ==================== 签到相关常量 ====================
+
+  /// 待办优先级
+  static const List<String> todoPriorities = [
+    'low',
+    'medium',
+    'high',
+  ];
+
+  /// 待办优先级标签
+  static const Map<String, String> todoPriorityLabels = {
+    'low': '低',
+    'medium': '中',
+    'high': '高',
+  };
+
+  /// 待办优先级颜色
+  static const Map<String, Color> todoPriorityColors = {
+    'low': Color(0xFF66BB6A),
+    'medium': Color(0xFFFFA726),
+    'high': Color(0xFFEF5350),
+  };
+
+  /// 自定义字段类型
+  static const List<String> customFieldTypes = [
+    'text',
+    'number',
+    'date',
+    'select',
+  ];
+
+  /// 自定义字段类型标签
+  static const Map<String, String> customFieldTypeLabels = {
+    'text': '文本',
+    'number': '数字',
+    'date': '日期',
+    'select': '选择',
+  };
+
+  /// 数据库相关常量
+  static const String databaseName = 'tunnelmate.db';
+  static const int databaseVersion = 2;
 }

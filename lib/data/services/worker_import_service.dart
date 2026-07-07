@@ -1,8 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:csv/csv.dart';
 import '../models/worker.dart';
 import '../repositories/worker_repository.dart';
+import '../repositories/custom_field_repository.dart';
+import '../repositories/worker_custom_value_repository.dart';
 
 /// CSV批量导入结果
 class ImportResult {
@@ -23,6 +24,8 @@ class ImportResult {
 
 class WorkerImportService {
   final WorkerRepository _repo = WorkerRepository();
+  final CustomFieldRepository _customFieldRepo = CustomFieldRepository();
+  final WorkerCustomValueRepository _customValueRepo = WorkerCustomValueRepository();
 
   /// 从CSV文件批量导入人员
   ///
@@ -32,6 +35,9 @@ class WorkerImportService {
   /// 证件号/certificate_no, 证件到期日/certificate_expire_date,
   /// 入职日期/entry_date, 紧急联系人/emergency_contact,
   /// 紧急联系人电话/emergency_phone, 备注/remark
+  ///
+  /// 同时支持以"自定义_"开头的列作为自定义字段值
+  /// 例如 "自定义_籍贯" 会被映射到名为"籍贯"的自定义字段
   ///
   /// 只有"姓名"和"工号"是必填，其余可选。
   /// 如果CSV没有表头行，也支持自动按列顺序匹配。
@@ -71,6 +77,13 @@ class WorkerImportService {
       );
     }
 
+    // 预加载所有自定义字段（用于匹配 CSV 中的自定义字段列）
+    final customFields = await _customFieldRepo.getAll();
+    final customFieldMap = <String, int>{};
+    for (final cf in customFields) {
+      customFieldMap[cf.name] = cf.id!;
+    }
+
     int successCount = 0;
     int skipCount = 0;
     int failCount = 0;
@@ -78,15 +91,19 @@ class WorkerImportService {
 
     // 字段名到列索引的映射
     Map<String, int> headerMap = {};
+    // 自定义字段列映射：字段名 -> 列索引
+    Map<String, int> customHeaderMap = {};
     List<dynamic>? dataRows;
 
     // 检测第一行是否是表头
     final firstRow = rows[0].map((e) => e.toString().trim()).toList();
     if (_isHeaderRow(firstRow)) {
-      headerMap = _buildHeaderMap(firstRow);
+      final result = _buildHeaderMap(firstRow);
+      headerMap = result.standardMap;
+      customHeaderMap = result.customMap;
       dataRows = rows.sublist(1);
     } else {
-      // 没有表头，按固定列顺序: 姓名,工号,电话,班组,工种,技能等级,证件号,证件到期日,入职日期,紧急联系人,紧急联系人电话,备注
+      // 没有表头，按固定列顺序
       headerMap = _defaultColumnMap(firstRow.length);
       dataRows = rows;
     }
@@ -95,13 +112,14 @@ class WorkerImportService {
       final row = dataRows![i];
 
       // 跳过空行
-      if (row.isEmpty ||
-          row.every((e) => e.toString().trim().isEmpty)) {
+      if (row.isEmpty || row.every((e) => e.toString().trim().isEmpty)) {
         continue;
       }
 
       try {
-        final worker = _parseRowToWorker(row, headerMap, i + 1);
+        final (worker, customValues) = _parseRowToWorker(
+          row, headerMap, customHeaderMap, customFieldMap, i + 1,
+        );
 
         if (worker.name.isEmpty || worker.employeeNo.isEmpty) {
           skipCount++;
@@ -117,7 +135,13 @@ class WorkerImportService {
           continue;
         }
 
-        await _repo.insert(worker);
+        final workerId = await _repo.insert(worker);
+
+        // 保存自定义字段值
+        for (final entry in customValues.entries) {
+          await _customValueRepo.upsert(workerId, entry.key, entry.value);
+        }
+
         successCount++;
       } catch (e) {
         failCount++;
@@ -133,34 +157,41 @@ class WorkerImportService {
     );
   }
 
-  /// 生成CSV导入模板
-  static String generateTemplate() {
+  /// 生成CSV导入模板（包含自定义字段列占位）
+  Future<String> generateTemplate() async {
     const header = [
       '姓名', '工号', '身份证号', '电话', '班组', '工种',
       '技能等级', '证件号', '证件到期日', '入职日期',
       '紧急联系人', '紧急联系人电话', '备注',
     ];
 
+    // 获取已有自定义字段，追加到模板中
+    final customFields = await _customFieldRepo.getAll();
+    final customHeaders = customFields.map((cf) => '自定义_${cf.name}').toList();
+    final fullHeader = [...header, ...customHeaders];
+
     // 示例行
-    const example = [
+    final example = [
       '张三', 'JJ001', '', '13800138001', '掘进一队', '掘进工',
       '中级', '', '', '2024-01-15', '', '', '示例人员',
+      ...List.filled(customHeaders.length, ''),
     ];
     const example2 = [
       '李四', 'JJ002', '', '13800138002', '支护班', '支护工',
       '高级', 'CERT001', '2025-12-31', '2023-06-01', '王五', '13900139001', '',
     ];
+    final example2Full = [...example2, ...List.filled(customHeaders.length, '')];
 
     const converter = CsvToListConverter();
     final List<List<dynamic>> rows = [
-      header,
+      fullHeader,
       example,
-      example2,
+      example2Full,
     ];
     return const ListToCsvConverter().convert(rows);
   }
 
-  /// 检测第一行是否为表头（包含"姓名"或"name"等关键字）
+  /// 检测第一行是否为表头
   bool _isHeaderRow(List<String> row) {
     final lower = row.map((e) => e.toLowerCase()).toSet();
     const headerKeywords = {'姓名', '工号', 'name', 'employee_no', 'employee'};
@@ -172,9 +203,10 @@ class WorkerImportService {
     return false;
   }
 
-  /// 根据表头行构建字段名→列索引映射
-  Map<String, int> _buildHeaderMap(List<String> headers) {
+  /// 根据表头行构建字段名到列索引的映射
+  _HeaderParseResult _buildHeaderMap(List<String> headers) {
     final map = <String, int>{};
+    final customMap = <String, int>{};
 
     // 支持的中英文表头映射
     const fieldAliases = {
@@ -223,16 +255,33 @@ class WorkerImportService {
     };
 
     for (int i = 0; i < headers.length; i++) {
-      final cell = headers[i].trim().toLowerCase();
+      final cell = headers[i].trim();
+      final cellLower = cell.toLowerCase();
+
+      // 检查是否是自定义字段列（以"自定义_"开头）
+      if (cellLower.startsWith('自定义_')) {
+        final fieldName = cell.substring(4);
+        customMap[fieldName] = i;
+        continue;
+      }
+
+      // 检查是否是自定义字段列（以"custom_"开头）
+      if (cellLower.startsWith('custom_')) {
+        final fieldName = cell.substring(7);
+        customMap[fieldName] = i;
+        continue;
+      }
+
+      // 标准字段匹配
       for (final entry in fieldAliases.entries) {
-        if (entry.key.toLowerCase() == cell) {
+        if (entry.key.toLowerCase() == cellLower) {
           map[entry.value] = i;
           break;
         }
       }
     }
 
-    return map;
+    return _HeaderParseResult(standardMap: map, customMap: customMap);
   }
 
   /// 无表头时的默认列顺序映射
@@ -249,37 +298,63 @@ class WorkerImportService {
     return map;
   }
 
-  /// 从一行数据解析为Worker对象
-  Worker _parseRowToWorker(
-      List<dynamic> row, Map<String, int> headerMap, int rowNum) {
+  /// 从一行数据解析为Worker对象和自定义字段值
+  (Worker worker, Map<int, String> customValues) _parseRowToWorker(
+    List<dynamic> row,
+    Map<String, int> headerMap,
+    Map<String, int> customHeaderMap,
+    Map<String, int> customFieldMap,
+    int rowNum,
+  ) {
     String getVal(String field) {
       final idx = headerMap[field];
       if (idx == null || idx >= row.length) return '';
       return row[idx].toString().trim();
     }
 
-    return Worker(
+    final worker = Worker(
       name: getVal('name'),
       employeeNo: getVal('employee_no'),
       idCard: getVal('id_card').isEmpty ? null : getVal('id_card'),
       phone: getVal('phone').isEmpty ? null : getVal('phone'),
-      department:
-          getVal('department').isEmpty ? null : getVal('department'),
+      department: getVal('department').isEmpty ? null : getVal('department'),
       jobType: getVal('job_type').isEmpty ? null : getVal('job_type'),
       jobLevel: getVal('job_level').isEmpty ? null : getVal('job_level'),
-      certificateNo:
-          getVal('certificate_no').isEmpty ? null : getVal('certificate_no'),
-      certificateExpireDate:
-          getVal('certificate_expire_date').isEmpty ? null : _normalizeDate(getVal('certificate_expire_date')),
-      entryDate:
-          getVal('entry_date').isEmpty ? null : _normalizeDate(getVal('entry_date')),
+      certificateNo: getVal('certificate_no').isEmpty ? null : getVal('certificate_no'),
+      certificateExpireDate: getVal('certificate_expire_date').isEmpty
+          ? null
+          : _normalizeDate(getVal('certificate_expire_date')),
+      entryDate: getVal('entry_date').isEmpty
+          ? null
+          : _normalizeDate(getVal('entry_date')),
       status: 'active',
-      emergencyContact:
-          getVal('emergency_contact').isEmpty ? null : getVal('emergency_contact'),
-      emergencyPhone:
-          getVal('emergency_phone').isEmpty ? null : getVal('emergency_phone'),
+      emergencyContact: getVal('emergency_contact').isEmpty
+          ? null
+          : getVal('emergency_contact'),
+      emergencyPhone: getVal('emergency_phone').isEmpty
+          ? null
+          : getVal('emergency_phone'),
       remark: getVal('remark').isEmpty ? null : getVal('remark'),
     );
+
+    // 解析自定义字段值
+    final customValues = <int, String>{};
+    for (final entry in customHeaderMap.entries) {
+      final fieldName = entry.key;
+      final colIdx = entry.value;
+      if (colIdx >= row.length) continue;
+
+      final value = row[colIdx].toString().trim();
+      if (value.isEmpty) continue;
+
+      // 查找自定义字段 ID
+      final fieldId = customFieldMap[fieldName];
+      if (fieldId != null) {
+        customValues[fieldId] = value;
+      }
+    }
+
+    return (worker, customValues);
   }
 
   /// 日期格式标准化：支持 2024-01-15、2024/01/15、20240115 等格式
@@ -313,4 +388,15 @@ class WorkerImportService {
 
     return dateStr; // 原样返回，让数据库处理
   }
+}
+
+/// 表头解析结果
+class _HeaderParseResult {
+  final Map<String, int> standardMap;
+  final Map<String, int> customMap;
+
+  _HeaderParseResult({
+    required this.standardMap,
+    required this.customMap,
+  });
 }

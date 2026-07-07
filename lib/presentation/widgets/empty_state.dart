@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/theme/theme_provider.dart';
 
+/// 空状态占位组件
 class EmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -15,36 +18,41 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.watch<ThemeProvider>().isDark;
+
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: 64,
-            color: AppColors.inactive,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              color: AppColors.secondaryText,
-              fontWeight: FontWeight.w500,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 48),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 64,
+              color: AppColors.inactiveColor(isDark).withOpacity(0.6),
             ),
-          ),
-          if (subtitle != null) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             Text(
-              subtitle!,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.inactive,
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.secondaryText(isDark),
+                fontWeight: FontWeight.w500,
               ),
-              textAlign: TextAlign.center,
             ),
+            if (subtitle != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                subtitle!,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: AppColors.inactiveColor(isDark),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

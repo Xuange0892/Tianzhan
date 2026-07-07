@@ -58,6 +58,8 @@ class WorkerRepository {
     return null;
   }
 
+  /// 获取所有人员，支持按部门和状态筛选
+  /// 部门从数据库动态读取，非常量
   Future<List<Worker>> getAll({String? status, String? department}) async {
     final db = await _dbHelper.database;
 
@@ -122,6 +124,7 @@ class WorkerRepository {
     return (result.first['count'] as int?) ?? 0;
   }
 
+  /// 按部门统计人数（从数据库动态读取部门名，无硬编码）
   Future<Map<String, int>> getStatsByDepartment() async {
     final db = await _dbHelper.database;
     final result = await db.rawQuery(
@@ -138,5 +141,14 @@ class WorkerRepository {
       ['active'],
     );
     return {for (var r in result) r['job_type'] as String: r['count'] as int};
+  }
+
+  /// 获取所有不重复的部门名
+  Future<List<String>> getDistinctDepartments() async {
+    final db = await _dbHelper.database;
+    final result = await db.rawQuery(
+      'SELECT DISTINCT department FROM workers WHERE department IS NOT NULL AND department != \'\' ORDER BY department ASC',
+    );
+    return result.map((r) => r['department'] as String).toList();
   }
 }

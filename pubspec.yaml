@@ -1,7 +1,7 @@
 name: tunnelmate
 description: 掘进一线技术员辅助管理App
 publish_to: 'none'
-version: 1.0.0+1
+version: 2.0.0+1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -9,14 +9,26 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # 状态管理
+  provider: ^6.1.0
+  # 主题偏好持久化
+  shared_preferences: ^2.2.0
+  # 数据库
   sqflite: ^2.3.0
+  # 路径获取
   path_provider: ^2.1.0
+  # 日期格式化
   intl: ^0.18.0
-  path: ^1.8.3
-  share_plus: ^7.0.0
-  url_launcher: ^6.1.0
+  # 文件选择
   file_picker: ^6.0.0
+  # CSV 处理
   csv: ^6.0.0
+  # 分享功能
+  share_plus: ^7.0.0
+  # 链接启动
+  url_launcher: ^6.1.0
+  # 图片选择（用于证件照片等）
+  image_picker: ^1.0.0
 
 dev_dependencies:
   flutter_test:

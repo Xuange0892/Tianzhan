@@ -18,6 +18,10 @@ class Worker {
   final String? createdAt;
   final String? updatedAt;
 
+  /// 自定义字段值列表（不在数据库主表中，通过 worker_custom_values 表关联）
+  /// key 为 custom_fields.id，value 为用户填写的值
+  Map<int, String> customFieldValues;
+
   Worker({
     this.id,
     required this.name,
@@ -37,7 +41,8 @@ class Worker {
     this.remark,
     this.createdAt,
     this.updatedAt,
-  });
+    Map<int, String>? customFieldValues,
+  }) : customFieldValues = customFieldValues ?? {};
 
   Map<String, dynamic> toMap() {
     return {
@@ -85,6 +90,16 @@ class Worker {
     );
   }
 
+  /// 从数据库 Map 创建，并同时附加自定义字段值
+  factory Worker.fromMapWithCustomValues(
+    Map<String, dynamic> map,
+    Map<int, String> customValues,
+  ) {
+    final worker = Worker.fromMap(map);
+    worker.customFieldValues = customValues;
+    return worker;
+  }
+
   Worker copyWith({
     int? id,
     String? name,
@@ -104,6 +119,7 @@ class Worker {
     String? remark,
     String? createdAt,
     String? updatedAt,
+    Map<int, String>? customFieldValues,
   }) {
     return Worker(
       id: id ?? this.id,
@@ -124,6 +140,7 @@ class Worker {
       remark: remark ?? this.remark,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      customFieldValues: customFieldValues ?? this.customFieldValues,
     );
   }
 }
