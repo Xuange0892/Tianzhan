@@ -35,7 +35,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
 
-    final dateStr = DateUtils.formatDate(_selectedDate);
+    final dateStr = AppDateUtils.formatDate(_selectedDate);
     final workers = await _workerRepo.getAll(status: 'active');
     final attendances = await _attendanceRepo.getByDate(dateStr);
 
@@ -54,9 +54,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   }
 
   Future<void> _recordAttendance(int workerId, String status) async {
-    final dateStr = DateUtils.formatDate(_selectedDate);
+    final dateStr = AppDateUtils.formatDate(_selectedDate);
     final now = DateTime.now();
-    final timeStr = DateUtils.formatTime(now);
+    final timeStr = AppDateUtils.formatTime(now);
 
     final existing = _attendanceMap[workerId];
     Attendance attendance;
@@ -81,9 +81,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   }
 
   Future<void> _batchRecord(String status) async {
-    final dateStr = DateUtils.formatDate(_selectedDate);
+    final dateStr = AppDateUtils.formatDate(_selectedDate);
     final now = DateTime.now();
-    final timeStr = DateUtils.formatTime(now);
+    final timeStr = AppDateUtils.formatTime(now);
 
     final attendances = <Attendance>[];
     for (final workerId in _selectedWorkerIds) {
@@ -121,8 +121,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = DateUtils.formatDate(_selectedDate);
-    final isToday = DateUtils.isSameDay(_selectedDate, DateTime.now());
+    final dateStr = AppDateUtils.formatDate(_selectedDate);
+    final isToday = AppDateUtils.isSameDay(_selectedDate, DateTime.now());
 
     return Scaffold(
       appBar: AppBar(
@@ -159,7 +159,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                           size: 18, color: AppColors.primary),
                       const SizedBox(width: 8),
                       Text(
-                        '${DateUtils.formatMonth(_selectedDate)} ${DateUtils.weekdayName(_selectedDate.weekday)}',
+                        '${AppDateUtils.formatMonth(_selectedDate)} ${AppDateUtils.weekdayName(_selectedDate.weekday)}',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

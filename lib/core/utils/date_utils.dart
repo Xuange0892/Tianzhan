@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
-class DateUtils {
-  DateUtils._();
+class AppDateUtils {
+  AppDateUtils._();
 
   static final DateFormat _dateFormat = DateFormat('yyyy-MM-dd');
   static final DateFormat _timeFormat = DateFormat('HH:mm');

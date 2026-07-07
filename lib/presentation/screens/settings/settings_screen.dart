@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
@@ -23,7 +22,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     try {
       final dbPath = await getDatabasesPath();
-      final dbFile = File(join(dbPath, 'tunnelmate.db'));
+      final dbFile = File('$dbPath/tunnelmate.db');
 
       if (!await dbFile.exists()) {
         if (mounted) {
@@ -36,8 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       final appDir = await getApplicationDocumentsDirectory();
       final backupFile = File(
-        join(appDir.path,
-            'tunnelmate_backup_${DateTime.now().millisecondsSinceEpoch}.db'),
+        '${appDir.path}/tunnelmate_backup_${DateTime.now().millisecondsSinceEpoch}.db',
       );
 
       await dbFile.copy(backupFile.path);

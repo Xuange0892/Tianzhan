@@ -51,7 +51,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Future<void> _addSchedule(int workerId) async {
     if (_selectedDate == null) return;
 
-    final dateStr = DateUtils.formatDate(_selectedDate!);
+    final dateStr = AppDateUtils.formatDate(_selectedDate!);
 
     final hasConflict =
         await _scheduleRepo.hasSchedule(dateStr, workerId);
@@ -86,7 +86,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   List<Schedule> _getSchedulesForDate(DateTime date) {
-    final dateStr = DateUtils.formatDate(date);
+    final dateStr = AppDateUtils.formatDate(date);
     return _monthSchedules.where((s) => s.date == dateStr).toList();
   }
 
@@ -136,7 +136,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             onPressed: _previousMonth,
           ),
           Text(
-            DateUtils.formatMonth(_focusedMonth),
+            AppDateUtils.formatMonth(_focusedMonth),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -153,8 +153,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   Widget _buildCalendarGrid() {
-    final firstDay = DateUtils.firstDayOfMonth(_focusedMonth);
-    final daysInMonth = DateUtils.daysInMonth(_focusedMonth);
+    final firstDay = AppDateUtils.firstDayOfMonth(_focusedMonth);
+    final daysInMonth = AppDateUtils.daysInMonth(_focusedMonth);
     final startWeekday = firstDay.weekday % 7;
 
     return Padding(
@@ -191,10 +191,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               if (index < startWeekday) return const SizedBox.shrink();
 
               final day = index - startWeekday + 1;
-              final date = DateTime(_focusedMonth.year, _focusedMonth.month, day);
+              final date = DateTime(_focusedMonth.year, _focusedMonth.month, day.toInt());
               final isSelected = _selectedDate != null &&
-                  DateUtils.isSameDay(date, _selectedDate!);
-              final isToday = DateUtils.isSameDay(date, DateTime.now());
+                  AppDateUtils.isSameDay(date, _selectedDate!);
+              final isToday = AppDateUtils.isSameDay(date, DateTime.now());
               final schedules = _getSchedulesForDate(date);
               final hasSchedule = schedules.isNotEmpty;
 
@@ -255,7 +255,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       );
     }
 
-    final dateStr = DateUtils.formatDate(_selectedDate!);
+    final dateStr = AppDateUtils.formatDate(_selectedDate!);
     final dateSchedules = _monthSchedules.where((s) => s.date == dateStr).toList();
 
     return Column(
@@ -265,7 +265,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           child: Row(
             children: [
               Text(
-                '${DateUtils.formatDate(_selectedDate!)} ${DateUtils.weekdayName(_selectedDate!.weekday)}',
+                '${AppDateUtils.formatDate(_selectedDate!)} ${AppDateUtils.weekdayName(_selectedDate!.weekday)}',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

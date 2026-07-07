@@ -1,7 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:csv/csv.dart';
 import '../models/worker.dart';
-import 'worker_repository.dart';
+import '../repositories/worker_repository.dart';
 
 /// CSV批量导入结果
 class ImportResult {
@@ -45,7 +46,7 @@ class WorkerImportService {
       );
     }
 
-    final content = await file.readAsString(utf8);
+    final content = await file.readAsString();
     if (content.trim().isEmpty) {
       return ImportResult(
         successCount: 0,

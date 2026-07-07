@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
 
-    final today = DateUtils.formatDate(DateTime.now());
+    final today = AppDateUtils.formatDate(DateTime.now());
     final workers = await _workerRepo.getAll(status: 'active');
     final todayAttendance = await _attendanceRepo.getByDate(today);
     final todaySchedules = await _scheduleRepo.getByDate(today);
@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          DateUtils.formatMonth(now),
+          AppDateUtils.formatMonth(now),
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(height: 4),
         Text(
-          '${DateUtils.weekdayName(now.weekday)}  ${DateUtils.formatDate(now)}',
+          '${AppDateUtils.weekdayName(now.weekday)}  ${AppDateUtils.formatDate(now)}',
           style: const TextStyle(
             fontSize: 14,
             color: AppColors.secondaryText,
@@ -327,7 +327,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const Divider(height: 1, color: AppColors.divider),
             itemBuilder: (context, index) {
               final worker = _expiringWorkers[index];
-              final days = DateUtils.daysUntilExpiry(
+              final days = AppDateUtils.daysUntilExpiry(
                   worker.certificateExpireDate);
               return ListTile(
                 dense: true,
