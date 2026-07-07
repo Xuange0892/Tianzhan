@@ -110,8 +110,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             const SizedBox(height: 24),
             Text('本月排班统计', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.primaryText(isDark))),
             const SizedBox(height: 12),
-            Wrap(spacing: 12, runSpacing: 8, children: [
-              _shiftStats.entries.map((e) => Container(
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              children: _shiftStats.entries.map((e) => Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
@@ -119,7 +121,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   Text('${e.value}次', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primary)),
                 ]),
               )).toList(),
-            ]),
+            ),
           ]),
         ),
       ),
