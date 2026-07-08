@@ -12,7 +12,7 @@ class ManagerScheduleRepository {
       'manager_schedules',
       where: 'date = ?',
       whereArgs: [date],
-      orderBy: 'manager_name ASC',
+      orderBy: 'date ASC',
     );
     return maps.map((m) => ManagerSchedule.fromMap(m)).toList();
   }
@@ -24,7 +24,7 @@ class ManagerScheduleRepository {
       'manager_schedules',
       where: 'date >= ? AND date <= ?',
       whereArgs: [start, end],
-      orderBy: 'date ASC, manager_name ASC',
+      orderBy: 'date ASC',
     );
     return maps.map((m) => ManagerSchedule.fromMap(m)).toList();
   }
@@ -36,7 +36,7 @@ class ManagerScheduleRepository {
       'manager_schedules',
       where: 'date LIKE ?',
       whereArgs: ['$yearMonth%'],
-      orderBy: 'date ASC, manager_name ASC',
+      orderBy: 'date ASC',
     );
     return maps.map((m) => ManagerSchedule.fromMap(m)).toList();
   }
