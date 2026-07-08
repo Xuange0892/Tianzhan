@@ -188,7 +188,7 @@ class _ManagerScheduleScreenState extends State<ManagerScheduleScreen> {
         }
 
         records.add(ManagerSchedule(
-          workerId: workerId,
+          workerId: workerId!,
           date: AppDateUtils.formatDate(parsedDate),
           position: position.isEmpty ? null : position,
         ));
